@@ -1,6 +1,8 @@
 # ACME Fund — ML Portfolio Allocator
 
-A supervised classifier that recommends one of four model portfolios — **Conservative**, **Balanced**, **Aggressive** or **Thematic-Tech** — for a new investor at client onboarding, served through a Streamlit adviser front end.
+**Live app:** [acme-portfolio-allocator.streamlit.app](https://acme-portfolio-allocator.streamlit.app/)
+
+A supervised classifier that recommends one of four model portfolios (Conservative, Balanced, Aggressive or Thematic-Tech) for a new investor at client onboarding, served through a Streamlit adviser front end.
 
 > **Academic context.** This repository is the code deliverable for Part 2 of the **BB7031 Machine Learning and FinTech Applications** individual assignment at Kingston University. It accompanies a separately submitted written report (1,800 words) and two BPMN 2.0 diagrams modelling (i) ACME Fund's client-onboarding business process and (ii) the ML application development workflow for this model. The fictional firm "ACME Fund" is the SME used throughout the report.
 
