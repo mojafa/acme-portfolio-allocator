@@ -71,9 +71,15 @@ acme-portfolio-allocator/
 │   ├── acme_rf_model.joblib             # works on a fresh clone without re-training)
 │   ├── acme_scaler.joblib
 │   └── acme_metadata.joblib
+├── signavio/                            # BPMN 2.0 diagrams + simulation export
+│   ├── ACME Fund — Onboarding & Portfolio Allocation (Business Process).bpmn
+│   ├── ACME Portfolio Allocator — ML Application Development Workflow.bpmn
+│   └── ACME Portfolio Allocator — ML Application Development Workflow Simulation.xlsx
 ├── requirements.txt
 └── README.md
 ```
+
+The two `.bpmn` files can be re-imported into Signavio to reproduce the diagrams and rerun the simulation; the `.xlsx` is the native Signavio simulation output (per-task cost, resource consumption per lane, waiting-time analysis).
 
 ---
 

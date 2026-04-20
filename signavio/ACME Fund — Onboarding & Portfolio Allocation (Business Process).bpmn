@@ -1,0 +1,877 @@
+<?xml version="1.0" encoding="UTF-8"?><definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:i18n="http://www.omg.org/spec/BPMN/non-normative/extensions/i18n/1.0" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:signavio="http://www.signavio.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" exporter="Signavio Process Editor, http://www.signavio.com" exporterVersion="26.16.0-20260417220421+3e9fec6" expressionLanguage="http://www.w3.org/TR/XPath" id="ACME_Fund_BP" targetNamespace="http://bpmn.io/schema/bpmn" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/2.0/20100501/BPMN20.xsd">
+   <dataStore capacity="0" id="sid-26afd247-4d59-48cc-9294-9797cb634895" isUnlimited="false" name="Client CRM / KYC DB"/>
+   <dataStore capacity="0" id="sid-37edb54c-7294-4c1d-9228-76c7be8c88ba" isUnlimited="false" name="Market Data Store (yfinance snapshot)"/>
+   <dataStore capacity="0" id="sid-b6b511fb-c946-45b3-a5ca-e07d883ebf93" isUnlimited="false" name="Model Registry (joblib artefacts)"/>
+   <dataStore capacity="0" id="sid-6aec495a-d511-4194-b89a-6f34d587dbbb" isUnlimited="false" name="Trade Blotter"/>
+   <dataStore capacity="0" id="sid-2ba26c5c-5c7a-4ce8-84d0-95c7e7e45d6d" isUnlimited="false" name="Compliance Archive (FCA)"/>
+   <collaboration id="sid-98c1e841-86a3-4263-89cf-651415f3605d">
+      <extensionElements>
+         <signavio:signavioDiagramMetaData metaKey="revisionid" metaValue="99b423c9d92648d3997c9085e8423cb4"/>
+      </extensionElements>
+      <participant id="Pool_Client" name="Prospective Client">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </participant>
+      <participant id="Pool_Yahoo" name="Market Data Provider (Yahoo Finance)">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </participant>
+      <participant id="Pool_FCA" name="FCA Regulator">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </participant>
+      <participant id="Pool_ACME" name="ACME Fund" processRef="Process_ACME">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </participant>
+   </collaboration>
+   <process id="Process_ACME" isClosed="false" isExecutable="false" name="ACME Fund" processType="None">
+      <extensionElements/>
+      <laneSet id="sid-cd8cd61f-7e17-4d36-918a-5398409ee58b">
+         <lane id="Lane_Onboarding" name="Client Onboarding">
+            <extensionElements>
+               <signavio:signavioMetaData metaKey="bgcolor" metaValue=""/>
+               <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+            </extensionElements>
+            <flowNodeRef>Start_Client</flowNodeRef>
+            <flowNodeRef>Task_CollectForm</flowNodeRef>
+            <flowNodeRef>Task_KYC</flowNodeRef>
+            <flowNodeRef>Gw_KYC</flowNodeRef>
+            <flowNodeRef>ML_CreditRisk</flowNodeRef>
+            <flowNodeRef>Task_Decline</flowNodeRef>
+            <flowNodeRef>End_Declined</flowNodeRef>
+         </lane>
+         <lane id="Lane_Profiling" name="Risk Profiling">
+            <extensionElements>
+               <signavio:signavioMetaData metaKey="bgcolor" metaValue=""/>
+               <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+            </extensionElements>
+            <flowNodeRef>Task_RiskQ</flowNodeRef>
+            <flowNodeRef>Task_ProfileBuild</flowNodeRef>
+         </lane>
+         <lane id="Lane_Allocation" name="Portfolio Allocation">
+            <extensionElements>
+               <signavio:signavioMetaData metaKey="bgcolor" metaValue=""/>
+               <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+            </extensionElements>
+            <flowNodeRef>Task_MarketSnapshot</flowNodeRef>
+            <flowNodeRef>ML_Allocator</flowNodeRef>
+            <flowNodeRef>Task_AdviserReview</flowNodeRef>
+            <flowNodeRef>Gw_AdviserOk</flowNodeRef>
+            <flowNodeRef>Task_Override</flowNodeRef>
+         </lane>
+         <lane id="Lane_Execution" name="Trade Execution">
+            <extensionElements>
+               <signavio:signavioMetaData metaKey="bgcolor" metaValue=""/>
+               <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+            </extensionElements>
+            <flowNodeRef>Task_BuildOrders</flowNodeRef>
+            <flowNodeRef>Task_ExecuteTrades</flowNodeRef>
+            <flowNodeRef>Task_Settlement</flowNodeRef>
+         </lane>
+         <lane id="Lane_RiskCompliance" name="Risk &amp; Compliance">
+            <extensionElements>
+               <signavio:signavioMetaData metaKey="bgcolor" metaValue=""/>
+               <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+            </extensionElements>
+            <flowNodeRef>ML_AnomalyCheck</flowNodeRef>
+            <flowNodeRef>Gw_Anomaly</flowNodeRef>
+            <flowNodeRef>Task_ManualReview</flowNodeRef>
+            <flowNodeRef>Task_ComplianceLog</flowNodeRef>
+         </lane>
+         <lane id="Lane_Reporting" name="Reporting">
+            <extensionElements>
+               <signavio:signavioMetaData metaKey="bgcolor" metaValue=""/>
+               <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+            </extensionElements>
+            <flowNodeRef>Task_ClientReport</flowNodeRef>
+            <flowNodeRef>End_Cycle</flowNodeRef>
+         </lane>
+      </laneSet>
+      <startEvent id="Start_Client" isInterrupting="true" name="New Client">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+            <signavio:signavioLabel align="left" ref="text_name" x="-23.0" y="35.0"/>
+         </extensionElements>
+         <outgoing>f1</outgoing>
+      </startEvent>
+      <task completionQuantity="1" id="Task_CollectForm" isForCompensation="false" name="Collect Onboarding Form" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+         <incoming>f1</incoming>
+         <outgoing>f2</outgoing>
+      </task>
+      <task completionQuantity="1" id="Task_KYC" isForCompensation="false" name="KYC / AML Verification" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+         <incoming>f2</incoming>
+         <outgoing>f3</outgoing>
+      </task>
+      <exclusiveGateway gatewayDirection="Diverging" id="Gw_KYC" name="KYC pass?">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+            <signavio:signavioLabel ref="text_name" x="-15.0" y="-40.0"/>
+         </extensionElements>
+         <incoming>f3</incoming>
+         <outgoing>f4</outgoing>
+         <outgoing>f5</outgoing>
+      </exclusiveGateway>
+      <serviceTask completionQuantity="1" id="ML_CreditRisk" implementation="##unspecified" isForCompensation="false" name="ML (Outlined): Credit Risk Score" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+         <incoming>f4</incoming>
+         <outgoing>f7</outgoing>
+      </serviceTask>
+      <task completionQuantity="1" id="Task_Decline" isForCompensation="false" name="Decline Application" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+         <incoming>f5</incoming>
+         <outgoing>f6</outgoing>
+      </task>
+      <endEvent id="End_Declined" name="Declined">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+            <signavio:signavioLabel align="left" ref="text_name" x="-11.0" y="37.0"/>
+         </extensionElements>
+         <incoming>f6</incoming>
+      </endEvent>
+      <task completionQuantity="1" id="Task_RiskQ" isForCompensation="false" name="Risk Tolerance Questionnaire" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+         <incoming>f7</incoming>
+         <outgoing>f8</outgoing>
+      </task>
+      <task completionQuantity="1" id="Task_ProfileBuild" isForCompensation="false" name="Build Investor Profile" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+         <incoming>f8</incoming>
+         <outgoing>f9</outgoing>
+      </task>
+      <task completionQuantity="1" id="Task_MarketSnapshot" isForCompensation="false" name="Snapshot Market Regime Features" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+         <incoming>f9</incoming>
+         <outgoing>f10</outgoing>
+      </task>
+      <serviceTask completionQuantity="1" id="ML_Allocator" implementation="##unspecified" isForCompensation="false" name="ML: Portfolio Allocator (Random Forest)" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+         <incoming>f10</incoming>
+         <outgoing>f11</outgoing>
+      </serviceTask>
+      <task completionQuantity="1" id="Task_AdviserReview" isForCompensation="false" name="Adviser Reviews Recommendation" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+         <incoming>f11</incoming>
+         <outgoing>f12</outgoing>
+      </task>
+      <exclusiveGateway gatewayDirection="Diverging" id="Gw_AdviserOk" name="Adviser agrees?">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+            <signavio:signavioLabel ref="text_name" x="-20.0" y="-40.0"/>
+         </extensionElements>
+         <incoming>f12</incoming>
+         <outgoing>f13</outgoing>
+         <outgoing>f14</outgoing>
+      </exclusiveGateway>
+      <task completionQuantity="1" id="Task_Override" isForCompensation="false" name="Adviser Override + Rationale" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+         <incoming>f14</incoming>
+         <outgoing>f15</outgoing>
+      </task>
+      <task completionQuantity="1" id="Task_BuildOrders" isForCompensation="false" name="Build Order List from Target Weights" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+         <incoming>f13</incoming>
+         <incoming>f15</incoming>
+         <outgoing>f16</outgoing>
+      </task>
+      <task completionQuantity="1" id="Task_ExecuteTrades" isForCompensation="false" name="Execute Trades" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+         <incoming>f16</incoming>
+         <outgoing>f17</outgoing>
+      </task>
+      <task completionQuantity="1" id="Task_Settlement" isForCompensation="false" name="Settlement" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+         <incoming>f17</incoming>
+         <outgoing>f18</outgoing>
+      </task>
+      <serviceTask completionQuantity="1" id="ML_AnomalyCheck" implementation="##unspecified" isForCompensation="false" name="ML (Outlined): Transaction Anomaly Check" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+         <incoming>f18</incoming>
+         <outgoing>f19</outgoing>
+      </serviceTask>
+      <exclusiveGateway gatewayDirection="Diverging" id="Gw_Anomaly" name="Anomaly?">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+            <signavio:signavioLabel ref="text_name" x="-20.0" y="-40.0"/>
+         </extensionElements>
+         <incoming>f19</incoming>
+         <outgoing>f20</outgoing>
+         <outgoing>f21</outgoing>
+      </exclusiveGateway>
+      <task completionQuantity="1" id="Task_ManualReview" isForCompensation="false" name="Manual Review" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+         <incoming>f20</incoming>
+         <outgoing>f22</outgoing>
+      </task>
+      <task completionQuantity="1" id="Task_ComplianceLog" isForCompensation="false" name="Write Compliance Log" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+         <incoming>f21</incoming>
+         <incoming>f22</incoming>
+         <outgoing>f23</outgoing>
+      </task>
+      <task completionQuantity="1" id="Task_ClientReport" isForCompensation="false" name="Issue Client Report" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+         <incoming>f23</incoming>
+         <outgoing>f24</outgoing>
+      </task>
+      <endEvent id="End_Cycle" name="Cycle Complete">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+            <signavio:signavioLabel align="left" ref="text_name" x="-23.0" y="35.0"/>
+         </extensionElements>
+         <incoming>f24</incoming>
+      </endEvent>
+      <sequenceFlow id="f1" isImmediate="true" name="" sourceRef="Start_Client" targetRef="Task_CollectForm">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f2" isImmediate="true" name="" sourceRef="Task_CollectForm" targetRef="Task_KYC">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f3" isImmediate="true" name="" sourceRef="Task_KYC" targetRef="Gw_KYC">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f4" isImmediate="true" name="Pass" sourceRef="Gw_KYC" targetRef="ML_CreditRisk">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f5" isImmediate="true" name="Fail" sourceRef="Gw_KYC" targetRef="Task_Decline">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f6" isImmediate="true" name="" sourceRef="Task_Decline" targetRef="End_Declined">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f7" isImmediate="true" name="" sourceRef="ML_CreditRisk" targetRef="Task_RiskQ">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f8" isImmediate="true" name="" sourceRef="Task_RiskQ" targetRef="Task_ProfileBuild">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f9" isImmediate="true" name="" sourceRef="Task_ProfileBuild" targetRef="Task_MarketSnapshot">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f10" isImmediate="true" name="" sourceRef="Task_MarketSnapshot" targetRef="ML_Allocator">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f11" isImmediate="true" name="" sourceRef="ML_Allocator" targetRef="Task_AdviserReview">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f12" isImmediate="true" name="" sourceRef="Task_AdviserReview" targetRef="Gw_AdviserOk">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f13" isImmediate="true" name="Accept" sourceRef="Gw_AdviserOk" targetRef="Task_BuildOrders">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f14" isImmediate="true" name="Override" sourceRef="Gw_AdviserOk" targetRef="Task_Override">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f15" isImmediate="true" name="" sourceRef="Task_Override" targetRef="Task_BuildOrders">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f16" isImmediate="true" name="" sourceRef="Task_BuildOrders" targetRef="Task_ExecuteTrades">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f17" isImmediate="true" name="" sourceRef="Task_ExecuteTrades" targetRef="Task_Settlement">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f18" isImmediate="true" name="" sourceRef="Task_Settlement" targetRef="ML_AnomalyCheck">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f19" isImmediate="true" name="" sourceRef="ML_AnomalyCheck" targetRef="Gw_Anomaly">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f20" isImmediate="true" name="Yes" sourceRef="Gw_Anomaly" targetRef="Task_ManualReview">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f21" isImmediate="true" name="No" sourceRef="Gw_Anomaly" targetRef="Task_ComplianceLog">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f22" isImmediate="true" name="" sourceRef="Task_ManualReview" targetRef="Task_ComplianceLog">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f23" isImmediate="true" name="" sourceRef="Task_ComplianceLog" targetRef="Task_ClientReport">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <sequenceFlow id="f24" isImmediate="true" name="" sourceRef="Task_ClientReport" targetRef="End_Cycle">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </sequenceFlow>
+      <dataStoreReference dataStoreRef="sid-26afd247-4d59-48cc-9294-9797cb634895" id="DS_ClientCRM" name="Client CRM / KYC DB">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+            <signavio:signavioLabel align="left" ref="text_name" x="-23.499500000000012" y="60.5865"/>
+         </extensionElements>
+      </dataStoreReference>
+      <dataStoreReference dataStoreRef="sid-37edb54c-7294-4c1d-9228-76c7be8c88ba" id="DS_MarketData" name="Market Data Store (yfinance snapshot)">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+            <signavio:signavioLabel align="left" ref="text_name" x="-33.49950000000001" y="60.5865"/>
+         </extensionElements>
+      </dataStoreReference>
+      <dataStoreReference dataStoreRef="sid-b6b511fb-c946-45b3-a5ca-e07d883ebf93" id="DS_ModelRegistry" name="Model Registry (joblib artefacts)">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+            <signavio:signavioLabel align="left" ref="text_name" x="-38.49950000000001" y="60.5865"/>
+         </extensionElements>
+      </dataStoreReference>
+      <dataStoreReference dataStoreRef="sid-6aec495a-d511-4194-b89a-6f34d587dbbb" id="DS_TradeBlotter" name="Trade Blotter">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+            <signavio:signavioLabel align="left" ref="text_name" x="-28.499500000000012" y="60.58649999999989"/>
+         </extensionElements>
+      </dataStoreReference>
+      <dataStoreReference dataStoreRef="sid-2ba26c5c-5c7a-4ce8-84d0-95c7e7e45d6d" id="DS_ComplianceArchive" name="Compliance Archive (FCA)">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+            <signavio:signavioLabel align="left" ref="text_name" x="-33.49950000000001" y="60.58649999999989"/>
+         </extensionElements>
+      </dataStoreReference>
+      <association associationDirection="None" id="A_KYC_CRM" sourceRef="Task_KYC" targetRef="DS_ClientCRM">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </association>
+      <association associationDirection="None" id="A_Profile_CRM" sourceRef="Task_ProfileBuild" targetRef="DS_ClientCRM">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </association>
+      <association associationDirection="None" id="A_Snap_Market" sourceRef="DS_MarketData" targetRef="Task_MarketSnapshot">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </association>
+      <association associationDirection="None" id="A_Alloc_Reg" sourceRef="DS_ModelRegistry" targetRef="ML_Allocator">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </association>
+      <association associationDirection="None" id="A_Execute_Blot" sourceRef="Task_ExecuteTrades" targetRef="DS_TradeBlotter">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </association>
+      <association associationDirection="None" id="A_Anom_Blot" sourceRef="DS_TradeBlotter" targetRef="ML_AnomalyCheck">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </association>
+      <association associationDirection="None" id="A_Comp_Arch" sourceRef="Task_ComplianceLog" targetRef="DS_ComplianceArchive">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bordercolor" metaValue="#000000"/>
+         </extensionElements>
+      </association>
+   </process>
+   <bpmndi:BPMNDiagram id="sid-a7bc157f-dd1b-45b5-af69-3e18111803b4">
+      <bpmndi:BPMNPlane bpmnElement="sid-98c1e841-86a3-4263-89cf-651415f3605d" id="sid-f2783a64-f49c-4ecb-a1ce-f132361c43ac">
+         <bpmndi:BPMNShape bpmnElement="Pool_Client" id="Pool_Client_gui" isHorizontal="true">
+            <omgdc:Bounds height="60.0" width="2200.0" x="160.0" y="40.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="20.0" width="159.4285888671875" x="1180.2857055664062" y="57.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Pool_Yahoo" id="Pool_Yahoo_gui" isHorizontal="true">
+            <omgdc:Bounds height="60.0" width="2200.0" x="160.0" y="1960.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="20.0" width="340.71435546875" x="1089.642822265625" y="1977.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Pool_FCA" id="Pool_FCA_gui" isHorizontal="true">
+            <omgdc:Bounds height="60.0" width="2200.0" x="160.0" y="2050.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="20.0" width="129.857177734375" x="1195.0714111328125" y="2067.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Pool_ACME" id="Pool_ACME_gui" isHorizontal="true">
+            <omgdc:Bounds height="1800.0" width="2200.0" x="160.0" y="130.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="61.71428680419922" width="12.0" x="165.0" y="999.1428565979004"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Lane_Onboarding" id="Lane_Onboarding_gui" isHorizontal="true">
+            <omgdc:Bounds height="300.0" width="2170.0" x="190.0" y="130.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="97.19999694824219" width="12.000000000000028" x="196.0" y="231.4000015258789"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Lane_Profiling" id="Lane_Profiling_gui" isHorizontal="true">
+            <omgdc:Bounds height="300.0" width="2170.0" x="190.0" y="430.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="68.65714263916016" width="12.0" x="196.0" y="545.6714286804199"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Lane_Allocation" id="Lane_Allocation_gui" isHorizontal="true">
+            <omgdc:Bounds height="300.0" width="2170.0" x="190.0" y="730.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="100.28571319580078" width="12.000000000000028" x="196.0" y="829.8571434020996"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Lane_Execution" id="Lane_Execution_gui" isHorizontal="true">
+            <omgdc:Bounds height="300.0" width="2170.0" x="190.0" y="1030.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="87.94285583496094" width="12.0" x="196.0" y="1136.0285720825195"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Lane_RiskCompliance" id="Lane_RiskCompliance_gui" isHorizontal="true">
+            <omgdc:Bounds height="300.0" width="2170.0" x="190.0" y="1330.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="98.74285888671875" width="12.000000000000028" x="196.0" y="1430.6285705566406"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Lane_Reporting" id="Lane_Reporting_gui" isHorizontal="true">
+            <omgdc:Bounds height="300.0" width="2170.0" x="190.0" y="1630.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="53.228572845458984" width="12.0" x="196.0" y="1753.3857135772705"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Start_Client" id="Start_Client_gui">
+            <omgdc:Bounds height="30.0" width="30.0" x="243.0" y="265.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-0fb772e2-459b-4caf-b9df-c884c0c4f7f1">
+               <omgdc:Bounds height="11.0" width="51.621429443359375" x="220.0" y="300.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Task_CollectForm" id="Task_CollectForm_gui">
+            <omgdc:Bounds height="80.0" width="140.0" x="320.0" y="240.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="24.0" width="102.60000610351562" x="338.6999969482422" y="266.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Task_KYC" id="Task_KYC_gui">
+            <omgdc:Bounds height="80.0" width="140.0" x="500.0" y="240.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="12.0" width="120.34286499023438" x="509.8285675048828" y="272.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Gw_KYC" id="Gw_KYC_gui" isMarkerVisible="true">
+            <omgdc:Bounds height="40.0" width="40.0" x="685.0" y="260.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-0fb772e2-459b-4caf-b9df-c884c0c4f7f1">
+               <omgdc:Bounds height="12.0" width="57.85714340209961" x="670.0" y="220.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="ML_CreditRisk" id="ML_CreditRisk_gui">
+            <omgdc:Bounds height="80.0" width="170.0" x="770.0" y="240.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="24.0" width="139.62857055664062" x="785.1857147216797" y="266.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Task_Decline" id="Task_Decline_gui">
+            <omgdc:Bounds height="60.0" width="140.0" x="780.0" y="360.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="12.0" width="100.28570556640625" x="799.8571472167969" y="382.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="End_Declined" id="End_Declined_gui">
+            <omgdc:Bounds height="26.0" width="26.0" x="963.0" y="375.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-0fb772e2-459b-4caf-b9df-c884c0c4f7f1">
+               <omgdc:Bounds height="11.0" width="41.014286041259766" x="952.0" y="412.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Task_RiskQ" id="Task_RiskQ_gui">
+            <omgdc:Bounds height="80.0" width="160.0" x="320.0" y="540.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="24.0" width="77.91427612304688" x="361.04286193847656" y="566.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Task_ProfileBuild" id="Task_ProfileBuild_gui">
+            <omgdc:Bounds height="80.0" width="160.0" x="520.0" y="540.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="12.0" width="111.85714721679688" x="544.0714263916016" y="572.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Task_MarketSnapshot" id="Task_MarketSnapshot_gui">
+            <omgdc:Bounds height="80.0" width="180.0" x="240.0" y="840.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="24.0" width="135.77142333984375" x="262.1142883300781" y="866.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="ML_Allocator" id="ML_Allocator_gui">
+            <omgdc:Bounds height="80.0" width="200.0" x="460.0" y="840.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="24.0" width="172.028564453125" x="473.9857177734375" y="866.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Task_AdviserReview" id="Task_AdviserReview_gui">
+            <omgdc:Bounds height="80.0" width="180.0" x="700.0" y="840.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="24.0" width="93.34286499023438" x="743.3285675048828" y="866.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Gw_AdviserOk" id="Gw_AdviserOk_gui" isMarkerVisible="true">
+            <omgdc:Bounds height="40.0" width="40.0" x="925.0" y="860.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-0fb772e2-459b-4caf-b9df-c884c0c4f7f1">
+               <omgdc:Bounds height="12.0" width="86.4000015258789" x="905.0" y="820.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Task_Override" id="Task_Override_gui">
+            <omgdc:Bounds height="60.0" width="180.0" x="1010.0" y="950.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="12.0" width="155.05714416503906" x="1022.4714279174805" y="972.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Task_BuildOrders" id="Task_BuildOrders_gui">
+            <omgdc:Bounds height="80.0" width="180.0" x="240.0" y="1140.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="24.0" width="152.74285888671875" x="253.62857055664062" y="1166.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Task_ExecuteTrades" id="Task_ExecuteTrades_gui">
+            <omgdc:Bounds height="80.0" width="160.0" x="450.0" y="1140.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="12.0" width="84.08572387695312" x="487.95713806152344" y="1172.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Task_Settlement" id="Task_Settlement_gui">
+            <omgdc:Bounds height="80.0" width="140.0" x="640.0" y="1140.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="12.0" width="59.399993896484375" x="680.3000030517578" y="1172.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="ML_AnomalyCheck" id="ML_AnomalyCheck_gui">
+            <omgdc:Bounds height="80.0" width="200.0" x="240.0" y="1440.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="24.0" width="144.25714111328125" x="267.8714294433594" y="1466.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Gw_Anomaly" id="Gw_Anomaly_gui" isMarkerVisible="true">
+            <omgdc:Bounds height="40.0" width="40.0" x="475.0" y="1460.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-0fb772e2-459b-4caf-b9df-c884c0c4f7f1">
+               <omgdc:Bounds height="12.0" width="52.4571418762207" x="455.0" y="1420.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Task_ManualReview" id="Task_ManualReview_gui">
+            <omgdc:Bounds height="60.0" width="160.0" x="560.0" y="1360.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="12.0" width="77.91427612304688" x="601.0428619384766" y="1382.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Task_ComplianceLog" id="Task_ComplianceLog_gui">
+            <omgdc:Bounds height="80.0" width="160.0" x="560.0" y="1440.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="12.0" width="118.028564453125" x="580.9857177734375" y="1472.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Task_ClientReport" id="Task_ClientReport_gui">
+            <omgdc:Bounds height="80.0" width="160.0" x="240.0" y="1740.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="12.0" width="104.14285278320312" x="267.92857360839844" y="1772.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="End_Cycle" id="End_Cycle_gui">
+            <omgdc:Bounds height="26.0" width="26.0" x="443.0" y="1765.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-0fb772e2-459b-4caf-b9df-c884c0c4f7f1">
+               <omgdc:Bounds height="11.0" width="75.6642837524414" x="420.0" y="1800.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="DS_ClientCRM" id="DS_ClientCRM_gui">
+            <omgdc:Bounds height="61.173" width="63.000999999999976" x="493.4995" y="344.4135"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="12.0" width="112.62857055664062" x="469.9995" y="405.0005056152344"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="DS_MarketData" id="DS_MarketData_gui">
+            <omgdc:Bounds height="61.173" width="63.000999999999976" x="243.4995" y="944.4135"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="12.0" width="211.37142944335938" x="209.9995" y="1005.0005056152344"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="DS_ModelRegistry" id="DS_ModelRegistry_gui">
+            <omgdc:Bounds height="61.173" width="63.000999999999976" x="493.4995" y="944.4135"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="12.0" width="173.57142639160156" x="454.9995" y="1005.0005056152344"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="DS_TradeBlotter" id="DS_TradeBlotter_gui">
+            <omgdc:Bounds height="61.172999999999774" width="63.000999999999976" x="473.4995" y="1234.4135"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="12.0" width="71.74285888671875" x="444.9995" y="1294.9994985351564"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="DS_ComplianceArchive" id="DS_ComplianceArchive_gui">
+            <omgdc:Bounds height="61.172999999999774" width="63.000999999999976" x="753.4995" y="1444.4135"/>
+            <bpmndi:BPMNLabel labelStyle="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+               <omgdc:Bounds height="12.0" width="138.85714721679688" x="719.9995" y="1504.9994985351564"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNEdge bpmnElement="f1" id="f1_gui">
+            <omgdi:waypoint x="273.0" y="280.0"/>
+            <omgdi:waypoint x="320.0" y="280.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f2" id="f2_gui">
+            <omgdi:waypoint x="460.0" y="280.0"/>
+            <omgdi:waypoint x="500.0" y="280.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f3" id="f3_gui">
+            <omgdi:waypoint x="640.0" y="280.0"/>
+            <omgdi:waypoint x="685.0" y="280.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f4" id="f4_gui">
+            <omgdi:waypoint x="725.0" y="280.0"/>
+            <omgdi:waypoint x="770.0" y="280.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-0fb772e2-459b-4caf-b9df-c884c0c4f7f1">
+               <omgdc:Bounds height="12.0" width="24.68572998046875" x="732.5239868164062" y="260.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f5" id="f5_gui">
+            <omgdi:waypoint x="705.0" y="300.0"/>
+            <omgdi:waypoint x="705.0" y="390.0"/>
+            <omgdi:waypoint x="780.0" y="390.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-0fb772e2-459b-4caf-b9df-c884c0c4f7f1">
+               <omgdc:Bounds height="16.971435546875" width="12.0" x="684.9995965725038" y="307.5243902439024"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f6" id="f6_gui">
+            <omgdi:waypoint x="920.0" y="390.0"/>
+            <omgdi:waypoint x="963.0" y="388.4642857142857"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f7" id="f7_gui">
+            <omgdi:waypoint x="855.0" y="320.0"/>
+            <omgdi:waypoint x="855.0" y="500.0"/>
+            <omgdi:waypoint x="400.0" y="500.0"/>
+            <omgdi:waypoint x="400.0" y="540.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f8" id="f8_gui">
+            <omgdi:waypoint x="480.0" y="580.0"/>
+            <omgdi:waypoint x="520.0" y="580.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f9" id="f9_gui">
+            <omgdi:waypoint x="600.0" y="620.0"/>
+            <omgdi:waypoint x="600.0" y="810.0"/>
+            <omgdi:waypoint x="330.0" y="810.0"/>
+            <omgdi:waypoint x="330.0" y="840.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f10" id="f10_gui">
+            <omgdi:waypoint x="420.0" y="880.0"/>
+            <omgdi:waypoint x="460.0" y="880.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f11" id="f11_gui">
+            <omgdi:waypoint x="660.0" y="880.0"/>
+            <omgdi:waypoint x="700.0" y="880.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f12" id="f12_gui">
+            <omgdi:waypoint x="880.0" y="880.0"/>
+            <omgdi:waypoint x="925.0" y="880.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f13" id="f13_gui">
+            <omgdi:waypoint x="945.0" y="900.0"/>
+            <omgdi:waypoint x="945.0" y="1110.0"/>
+            <omgdi:waypoint x="330.0" y="1110.0"/>
+            <omgdi:waypoint x="330.0" y="1140.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-0fb772e2-459b-4caf-b9df-c884c0c4f7f1">
+               <omgdc:Bounds height="36.25714111328125" width="12.0" x="924.9995965725038" y="907.5243902439024"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f14" id="f14_gui">
+            <omgdi:waypoint x="965.0" y="880.0"/>
+            <omgdi:waypoint x="1100.0" y="880.0"/>
+            <omgdi:waypoint x="1100.0" y="950.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-0fb772e2-459b-4caf-b9df-c884c0c4f7f1">
+               <omgdc:Bounds height="12.0" width="45.5142822265625" x="972.5239868164062" y="860.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f15" id="f15_gui">
+            <omgdi:waypoint x="1100.0" y="1010.0"/>
+            <omgdi:waypoint x="1100.0" y="1110.0"/>
+            <omgdi:waypoint x="330.0" y="1110.0"/>
+            <omgdi:waypoint x="330.0" y="1140.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f16" id="f16_gui">
+            <omgdi:waypoint x="420.0" y="1180.0"/>
+            <omgdi:waypoint x="450.0" y="1180.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f17" id="f17_gui">
+            <omgdi:waypoint x="610.0" y="1180.0"/>
+            <omgdi:waypoint x="640.0" y="1180.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f18" id="f18_gui">
+            <omgdi:waypoint x="710.0" y="1220.0"/>
+            <omgdi:waypoint x="710.0" y="1410.0"/>
+            <omgdi:waypoint x="340.0" y="1410.0"/>
+            <omgdi:waypoint x="340.0" y="1440.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f19" id="f19_gui">
+            <omgdi:waypoint x="440.0" y="1480.0"/>
+            <omgdi:waypoint x="475.0" y="1480.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f20" id="f20_gui">
+            <omgdi:waypoint x="495.0" y="1460.0"/>
+            <omgdi:waypoint x="495.0" y="1390.0"/>
+            <omgdi:waypoint x="560.0" y="1390.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-0fb772e2-459b-4caf-b9df-c884c0c4f7f1">
+               <omgdc:Bounds height="19.28570556640625" width="12.0" x="475.0" y="1433.2142944335938"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f21" id="f21_gui">
+            <omgdi:waypoint x="515.0" y="1480.0"/>
+            <omgdi:waypoint x="560.0" y="1480.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-0fb772e2-459b-4caf-b9df-c884c0c4f7f1">
+               <omgdc:Bounds height="12.0" width="14.65716552734375" x="522.5239868164062" y="1460.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f22" id="f22_gui">
+            <omgdi:waypoint x="640.0" y="1420.0"/>
+            <omgdi:waypoint x="640.0" y="1440.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f23" id="f23_gui">
+            <omgdi:waypoint x="640.0" y="1520.0"/>
+            <omgdi:waypoint x="640.0" y="1710.0"/>
+            <omgdi:waypoint x="320.0" y="1710.0"/>
+            <omgdi:waypoint x="320.0" y="1740.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="f24" id="f24_gui">
+            <omgdi:waypoint x="400.0" y="1780.0"/>
+            <omgdi:waypoint x="443.0" y="1778.4642857142858"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="A_KYC_CRM" id="A_KYC_CRM_gui">
+            <omgdi:waypoint x="570.0" y="320.0"/>
+            <omgdi:waypoint x="550.0253181818182" y="344.4135"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="A_Profile_CRM" id="A_Profile_CRM_gui">
+            <omgdi:waypoint x="600.0" y="540.0"/>
+            <omgdi:waypoint x="538.9029545454546" y="405.5865"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="A_Snap_Market" id="A_Snap_Market_gui">
+            <omgdi:waypoint x="288.9029545454545" y="944.4135"/>
+            <omgdi:waypoint x="300.0" y="920.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="A_Alloc_Reg" id="A_Alloc_Reg_gui">
+            <omgdi:waypoint x="544.4641363636364" y="944.4135"/>
+            <omgdi:waypoint x="560.0" y="920.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="A_Execute_Blot" id="A_Execute_Blot_gui">
+            <omgdi:waypoint x="530.0" y="1220.0"/>
+            <omgdi:waypoint x="521.9925" y="1234.4135"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="A_Anom_Blot" id="A_Anom_Blot_gui">
+            <omgdi:waypoint x="476.1613000000001" y="1295.5865"/>
+            <omgdi:waypoint x="340.0" y="1440.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="A_Comp_Arch" id="A_Comp_Arch_gui">
+            <omgdi:waypoint x="720.0" y="1480.0"/>
+            <omgdi:waypoint x="753.4995" y="1477.4231153846154"/>
+         </bpmndi:BPMNEdge>
+      </bpmndi:BPMNPlane>
+      <bpmndi:BPMNLabelStyle id="sid-0fb772e2-459b-4caf-b9df-c884c0c4f7f1">
+         <omgdc:Font isBold="false" isItalic="false" isStrikeThrough="false" isUnderline="false" name="Arial" size="11.0"/>
+      </bpmndi:BPMNLabelStyle>
+      <bpmndi:BPMNLabelStyle id="sid-a855b567-c095-471a-a93f-048a0d1cccfb">
+         <omgdc:Font isBold="false" isItalic="false" isStrikeThrough="false" isUnderline="false" name="Arial" size="12.0"/>
+      </bpmndi:BPMNLabelStyle>
+   </bpmndi:BPMNDiagram>
+</definitions>
