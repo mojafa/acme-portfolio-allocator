@@ -239,12 +239,13 @@ elif page == 'Model Card':
 elif page == 'Compare Models':
     st.title('Model selection — explainability vs accuracy')
     st.caption(
-        'Three candidate models were trained on the same data. ACME chose the '
-        'Random Forest: it matches or beats the MLP on accuracy while remaining '
-        'explainable through feature importance and SHAP values. The Decision '
-        'Tree is fully interpretable but sacrifices too much accuracy.'
+        'Three candidate model families were evaluated; Random Forest won on '
+        'macro-F1 and ROC-AUC while remaining explainable via feature importance '
+        'and SHAP. An imbalance-mitigation comparison for the chosen family is '
+        'shown below the family comparison.'
     )
 
+    st.subheader('Model-family comparison (deployed Random Forest uses class_weight=balanced)')
     df = pd.DataFrame(meta['comparison_table'])
     df.index.name = 'Model'
     st.dataframe(
@@ -258,8 +259,8 @@ elif page == 'Compare Models':
 **Reading the table**
 
 - **Decision Tree** — every split is human-readable. Lowest accuracy but highest regulatory defensibility. Kept as the explainability floor.
-- **Random Forest** — best accuracy + best ROC-AUC. Feature importance and SHAP values provide post-hoc explanations, so the EU AI Act transparency obligation for high-risk financial AI is met without sacrificing predictive quality. **Deployed.**
-- **MLP** — close on accuracy, slightly higher F1 on minority classes, but a small dense network offers no native interpretability and the cost of adding SHAP dominates any marginal accuracy gain.
+- **Random Forest** — wins on all three metrics after the class-imbalance fix. Feature importance and SHAP values provide post-hoc explanations, so the EU AI Act transparency obligation for high-risk financial AI is met without sacrificing predictive quality. **Deployed.**
+- **MLP** — close on accuracy but trails on macro-F1 and ROC-AUC, and offers no native interpretability; the cost of adding SHAP dominates any marginal gain.
 """)
 
     fig, ax = plt.subplots(figsize=(7, 4))
@@ -267,3 +268,36 @@ elif page == 'Compare Models':
     ax.set_ylabel('Score'); ax.set_ylim(0.5, 1.0); ax.set_xticklabels(df.index, rotation=0)
     ax.legend(loc='lower right')
     st.pyplot(fig, clear_figure=True)
+
+    # Four-way imbalance-mitigation comparison (only shown if metadata carries it)
+    if 'imbalance_comparison' in meta:
+        st.subheader('Class-imbalance mitigation — four approaches')
+        st.caption(
+            'The baseline RF scored 87.4% accuracy but only 0.659 macro-F1 because '
+            'the Aggressive minority class received 13.3% recall. Four mitigation '
+            'strategies were evaluated; the deployed model uses '
+            "class_weight='balanced'."
+        )
+        imb_df = pd.DataFrame(meta['imbalance_comparison'])
+        imb_df = imb_df.rename(columns={
+            'approach': 'Approach', 'accuracy': 'Accuracy',
+            'macro_F1': 'Macro-F1', 'roc_auc_macro': 'ROC-AUC',
+            'aggressive_recall': 'Aggressive recall',
+            'thematic_precision': 'Thematic-Tech precision',
+        })
+        st.dataframe(
+            imb_df.style
+                .format({c: '{:.3f}' for c in ['Accuracy', 'Macro-F1', 'ROC-AUC',
+                                                'Aggressive recall', 'Thematic-Tech precision']})
+                .highlight_max(subset=['Macro-F1'], color='#d4edda'),
+            use_container_width=True,
+            hide_index=True,
+        )
+        st.markdown("""
+**Reading the table**
+
+- `class_weight='balanced'` reweights loss inversely to class frequency during tree-split evaluation. Best macro-F1, lifts Aggressive recall from 13.3% to 56.7% while keeping Thematic-Tech precision at 1.000. **Deployed.**
+- `class_weight='balanced_subsample'` — the bootstrap-per-tree variant. 0.5 pp worse on macro-F1; not selected.
+- **SMOTE** (Chawla et al., 2002) oversamples minority classes by synthesising interpolated samples. Improved Aggressive recall to 60.0% but collapsed Thematic-Tech precision to 0.552 — the synthetic samples widened the decision region beyond the real class boundary, so the model over-predicted minority classes. Net macro-F1: 0.709, worse than either weighting approach.
+- **Baseline** — unweighted. Reports a misleadingly high accuracy (87.4%) because it almost never predicts Aggressive.
+""")
